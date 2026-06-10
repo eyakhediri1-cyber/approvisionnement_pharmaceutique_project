@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+
+:host {
+  --bg-sand: #fdfaf7;
+  --soft-cream: #f5f1ea;
+  --warm-tan: #d6c7b1;
+  --earth-brown: #8d775f;
+  --deep-chocolate: #3e2f28;
+  --accent-gold: #c5a37d;
+  
+  display: block;
+  min-height: 100vh;
+  background-color: var(--bg-sand);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: var(--deep-chocolate);
+}
+
+
+
+
+
+/* --- HERO SECTION (AJUSTÉE À 280PX COMME LE STOCK) --- */
+.hero-section {
+  position: relative;
+  border-radius: 35px;
+  overflow: hidden;
+  height: 280px;
+  margin-top: 20px;
+  box-shadow: 0 20px 40px rgba(62, 47, 40, 0.1);
+}
+
+.hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: sepia(20%) brightness(0.8);
+}
+
+.hero-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 40px;
+  background: linear-gradient(transparent, rgba(62, 47, 40, 0.8));
+  width: 100%;
+  color: white;
+}
+
+/* --- CARTES ET TABLEAUX --- */
+.luxury-card {
+  background: white;
+  border-radius: 28px;
+  border: 1px solid rgba(62, 47, 40, 0.05);
+  box-shadow: 0 15px 35px rgba(141, 119, 95, 0.08);
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.table-luxe {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table-luxe th {
+  background: var(--soft-cream);
+  padding: 18px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--earth-brown);
+  font-weight: 700;
+  border-bottom: 2px solid var(--warm-tan);
+}
+
+.table-luxe td {
+  padding: 20px;
+  border-bottom: 1px solid var(--soft-cream);
+  vertical-align: middle;
+  font-size: 0.95rem;
+}
+
+/* --- INPUTS ET BOUTONS --- */
+.premium-input {
+  border-radius: 15px;
+  border: 1.5px solid var(--warm-tan);
+  padding: 12px 20px;
+  background: var(--bg-sand);
+  color: var(--deep-chocolate);
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.premium-input:focus {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 4px rgba(197, 163, 125, 0.1);
+  background: white;
+}
+
+.btn-brown {
+  background: var(--deep-chocolate);
+  color: white;
+  border-radius: 50px;
+  padding: 12px 28px;
+  font-weight: 600;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-brown:hover {
+  background: var(--earth-brown);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(62, 47, 40, 0.2);
+}
+
+/* --- FOOTER (STYLE STOCK) --- */
+.app-footer {
+  padding: 50px 0;
+  border-top: 1px solid var(--soft-cream);
+  margin-top: 100px;
+  background: white;
+}
+
+.rounded-circle {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}

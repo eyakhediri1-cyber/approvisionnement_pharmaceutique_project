@@ -1,0 +1,147 @@
+<div class="dashboard-root">
+
+  <div class="loading-overlay" *ngIf="loading">
+    <div class="loading-pulse">
+      <span class="pulse-icon">💊</span>
+      <p>Chargement du tableau de bord…</p>
+    </div>
+  </div>
+
+  <ng-container *ngIf="!loading">
+
+    <section class="dash-hero">
+      <div class="hero-content">
+        <div class="hero-text">
+          <p class="hero-greeting">{{ greeting }},</p>
+          <h1 class="hero-name">{{ userName }} <span class="wave">👋</span></h1>
+          <p class="hero-sub">Voici un aperçu de votre activité aujourd'hui.</p>
+        </div>
+        <div class="hero-date">
+          <span class="date-label">Aujourd'hui</span>
+          <span class="date-value">{{ today | date:'EEEE d MMMM yyyy' : '' : 'fr' }}</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="kpi-section">
+      <div class="kpi-grid">
+
+        <a routerLink="/stock" class="kpi-card kpi-green">
+          <div class="kpi-icon-wrap">📦</div>
+          <div class="kpi-body">
+            <span class="kpi-value">{{ totalProduits }}</span>
+            <span class="kpi-label">Produits en stock</span>
+          </div>
+          <div class="kpi-arrow">→</div>
+        </a>
+
+        <a routerLink="/gestion-clients" class="kpi-card kpi-blue">
+          <div class="kpi-icon-wrap">👥</div>
+          <div class="kpi-body">
+            <span class="kpi-value">{{ totalClients }}</span>
+            <span class="kpi-label">Clients actifs</span>
+          </div>
+          <div class="kpi-arrow">→</div>
+        </a>
+
+        <a routerLink="/commandes" class="kpi-card kpi-orange" [class.kpi-urgent]="commandesAttente > 0">
+          <div class="kpi-icon-wrap">🚚</div>
+          <div class="kpi-body">
+            <span class="kpi-value">{{ commandesAttente }}</span>
+            <span class="kpi-label">Commandes en attente</span>
+          </div>
+          <span class="kpi-pulse" *ngIf="commandesAttente > 0"></span>
+          <div class="kpi-arrow">→</div>
+        </a>
+
+        <div class="kpi-card kpi-red" [class.kpi-urgent]="alertesStock + alertesPeremption > 0">
+          <div class="kpi-icon-wrap">⚠️</div>
+          <div class="kpi-body">
+            <span class="kpi-value">{{ alertesStock + alertesPeremption }}</span>
+            <span class="kpi-label">Alertes actives</span>
+          </div>
+          <span class="kpi-pulse" *ngIf="alertesStock + alertesPeremption > 0"></span>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="dash-grid">
+
+      <div class="dash-card card-wide">
+        <div class="card-header">
+          <h2 class="card-title">
+            <span class="card-title-icon">📋</span>
+            Commandes récentes
+          </h2>
+          <a routerLink="/commandes" class="card-link">Voir tout →</a>
+        </div>
+
+        <div class="empty-state" *ngIf="dernieresCommandes.length === 0">
+          <span>🎉</span>
+          <p>Aucune commande pour le moment.</p>
+        </div>
+
+        <div class="commande-list" *ngIf="dernieresCommandes.length > 0">
+          <div class="commande-row" *ngFor="let cmd of dernieresCommandes">
+            <div class="cmd-id">#{{ cmd.id }}</div>
+            <div class="cmd-client">{{ cmd.nom_client || '—' }}</div>
+            <div class="cmd-date">{{ cmd.date_commande | date:'dd/MM/yy' }}</div>
+            <div class="cmd-statut">
+              <span class="badge" [ngClass]="statutClass(cmd.statut)">{{ cmd.statut }}</span>
+            </div>
+            <a routerLink="/commandes" class="cmd-action">Gérer →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <span class="card-title-icon">📉</span>
+            Stock faible
+          </h2>
+          <a routerLink="/stock" class="card-link">Stock →</a>
+        </div>
+
+        <div class="empty-state" *ngIf="produitsAlerte.length === 0">
+          <span>✅</span>
+          <p>Tous les stocks sont OK.</p>
+        </div>
+
+        <ul class="alerte-list" *ngIf="produitsAlerte.length > 0">
+          <li class="alerte-item" *ngFor="let p of produitsAlerte">
+            <span class="alerte-dot dot-orange"></span>
+            <span class="alerte-nom">{{ p.nom_med }}</span>
+            <span class="alerte-stock">{{ p.stock_dispo }} unités</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="dash-card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <span class="card-title-icon">📅</span>
+            Péremptions proches
+          </h2>
+          <a routerLink="/stock" class="card-link">Stock →</a>
+        </div>
+
+        <div class="empty-state" *ngIf="produitsPeremption.length === 0">
+          <span>✅</span>
+          <p>Aucune péremption imminente.</p>
+        </div>
+
+        <ul class="alerte-list" *ngIf="produitsPeremption.length > 0">
+          <li class="alerte-item" *ngFor="let p of produitsPeremption">
+            <span class="alerte-dot dot-red"></span>
+            <span class="alerte-nom">{{ p.nom_med }}</span>
+            <span class="alerte-stock">{{ p.date_peremption | date:'dd/MM/yy' }}</span>
+          </li>
+        </ul>
+      </div>
+
+    </section>
+
+  </ng-container>
+</div>

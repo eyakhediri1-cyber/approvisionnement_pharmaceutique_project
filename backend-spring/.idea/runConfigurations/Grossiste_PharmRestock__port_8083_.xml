@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Grossiste PharmRestock (port 8083)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <option name="ACTIVE_PROFILES" value="pharmRestock" />
+    <module name="approvisionnement" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.pharma.approvisionnement.ApprovisionnementApplication" />
+    <option name="VM_PARAMETERS" value="-Dspring.profiles.active=pharmRestock" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

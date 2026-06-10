@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Grossiste MeDistrib (port 8082)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <option name="ACTIVE_PROFILES" value="meDistrib" />
+    <module name="approvisionnement" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.pharma.approvisionnement.ApprovisionnementApplication" />
+    <option name="VM_PARAMETERS" value="-Dspring.profiles.active=meDistrib" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -1,0 +1,44 @@
+<div class="app-wrapper">
+  <header class="app-header">
+    <div class="header-inner">
+
+      <a routerLink="/dashboard" class="brand">
+        <div class="brand-pill">
+          <i class="bi bi-capsule"></i>
+        </div>
+        <span class="brand-name">Medica<span class="brand-accent">Lab</span></span>
+      </a>
+
+      <div class="header-divider"></div>
+
+      <nav class="header-nav">
+        <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-grid"></i> Tableau de bord
+        </a>
+        <a routerLink="/stock" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-box"></i> Stock
+        </a>
+        <a routerLink="/gestion-clients" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-people"></i> Clients
+        </a>
+        <a routerLink="/commandes" routerLinkActive="active" class="nav-link nav-link-notif">
+          <i class="bi bi-bag"></i> Commandes
+          <span *ngIf="(nbCommandes$ | async) as nb" class="notif-badge">
+            {{ nb > 99 ? '99+' : nb }}
+          </span>
+        </a>
+      </nav>
+
+      <div class="header-right">
+        <a routerLink="/commandes" class="bell-btn" title="Commandes en attente">
+          <i class="bi bi-bell"></i>
+          <span *ngIf="(nbCommandes$ | async) as nb" class="bell-dot"></span>
+        </a>
+        <div class="avatar">AD</div>
+      </div>
+
+    </div>
+  </header>
+
+  <router-outlet></router-outlet>
+</div>

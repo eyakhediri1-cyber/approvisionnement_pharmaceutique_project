@@ -1,0 +1,109 @@
+<div class="commandes-page">
+
+  <!-- En-tête -->
+  <div class="page-header">
+    <div class="header-left">
+      <h2 class="page-title">
+        <i class="bi bi-inbox-fill me-2"></i>
+        Commandes reçues
+        <span *ngIf="nbEnAttente > 0" class="count-badge">{{ nbEnAttente }}</span>
+      </h2>
+      <p class="page-subtitle">Gérez les commandes envoyées par les pharmacies</p>
+    </div>
+    <button class="btn-refresh" (click)="charger()" [class.spinning]="loading">
+      <i class="bi bi-arrow-repeat"></i>
+    </button>
+  </div>
+
+  <!-- Filtres par statut -->
+  <div class="filtres-bar">
+    <button
+      *ngFor="let s of statuts"
+      class="filtre-btn"
+      [class.active]="filtreStatut === s"
+      (click)="filtreStatut = s">
+      {{ s === 'tous' ? 'Toutes' : s }}
+      <span *ngIf="s !== 'tous'" class="filtre-count">
+        {{ commandes | filtreStatut:s }}
+      </span>
+    </button>
+  </div>
+
+  <!-- Erreur -->
+  <div *ngIf="error" class="alert-error">
+    <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+  </div>
+
+  <!-- Skeleton loading -->
+  <ng-container *ngIf="loading">
+    <div class="cmd-card skeleton" *ngFor="let i of [1,2,3]">
+      <div class="skeleton-line w-40"></div>
+      <div class="skeleton-line w-60 mt-2"></div>
+      <div class="skeleton-line w-30 mt-2"></div>
+    </div>
+  </ng-container>
+
+  <!-- Liste des commandes -->
+  <ng-container *ngIf="!loading">
+    <div *ngIf="commandesFiltrees.length === 0" class="empty-state">
+      <i class="bi bi-inbox fs-1 mb-3 d-block"></i>
+      <p>Aucune commande {{ filtreStatut !== 'tous' ? '"' + filtreStatut + '"' : '' }}</p>
+    </div>
+
+    <div
+      *ngFor="let cmd of commandesFiltrees; let i = index"
+      class="cmd-card stagger-item"
+      [style.animation-delay]="(i * 0.06) + 's'"
+      [class.card-attente]="cmd.statut === 'En attente'">
+
+      <!-- Ligne principale -->
+      <div class="cmd-top">
+        <div class="cmd-id">#{{ cmd.id }}</div>
+        <span class="status-badge" [ngClass]="statutClass(cmd.statut)">
+          <span class="dot"></span>
+          {{ cmd.statut }}
+        </span>
+      </div>
+
+      <!-- Infos médicament -->
+      <div class="cmd-body">
+        <div class="cmd-med">
+          <i class="bi bi-capsule me-2"></i>
+          <strong>{{ cmd.nom_med }}</strong>
+        </div>
+        <div class="cmd-meta">
+          <span class="meta-item">
+            <i class="bi bi-boxes me-1"></i>
+            <strong>{{ cmd.quantite }}</strong> unités
+          </span>
+          <span class="meta-item" *ngIf="cmd.prix_total > 0">
+            <i class="bi bi-tag me-1"></i>
+            {{ cmd.prix_total | number:'1.2-2' }} DT
+          </span>
+          <span class="meta-item">
+            <i class="bi bi-calendar3 me-1"></i>
+            {{ cmd.date_cmd | date:'dd/MM/yyyy à HH:mm' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Actions disponibles -->
+      <div class="cmd-actions" *ngIf="actionsDisponibles(cmd.statut).length > 0">
+        <button
+          *ngFor="let action of actionsDisponibles(cmd.statut)"
+          class="btn-action"
+          [ngClass]="action === 'Annulée' ? 'btn-danger' : 'btn-primary'"
+          (click)="changerStatut(cmd, action)">
+          <i class="bi" [ngClass]="iconAction(action)"></i>
+          {{ action }}
+        </button>
+      </div>
+
+      <!-- Date traitement si traité -->
+      <div *ngIf="cmd.date_traitement" class="cmd-traitement">
+        <i class="bi bi-check2-circle me-1"></i>
+        Traité le {{ cmd.date_traitement | date:'dd/MM/yyyy à HH:mm' }}
+      </div>
+    </div>
+  </ng-container>
+</div>

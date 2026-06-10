@@ -1,0 +1,164 @@
+<div class="app-wrapper">
+  <main class="container py-5">
+
+    <!-- Messages succès / erreur -->
+    <div class="alert alert-success alert-dismissible fade show" role="alert" *ngIf="messageSucces">
+      <i class="bi bi-check-circle-fill me-2"></i>{{ messageSucces }}
+    </div>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="messageErreur">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ messageErreur }}
+    </div>
+
+    <section class="hero-section mb-5">
+      <img src="https://i.pinimg.com/1200x/02/cf/b9/02cfb962798898cb3460111b417856bc.jpg"
+           alt="Pharmacies" class="hero-img">
+      <div class="hero-content">
+        <h2 class="display-6 fw-bold">Annuaire des Pharmacies</h2>
+        <p class="m-0 opacity-75">Gérez votre réseau de distribution.</p>
+      </div>
+    </section>
+
+    <div class="row mb-5 align-items-center">
+      <div class="col-md-8">
+        <div class="position-relative">
+          <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+          <input type="text" class="premium-input w-100 ps-5" placeholder="Rechercher une pharmacie..."
+            [(ngModel)]="searchTerm" (input)="filterClients()">
+        </div>
+      </div>
+      <div class="col-md-4 text-end">
+        <button class="btn btn-brown w-100" (click)="showForm = !showForm">
+          <i class="bi" [ngClass]="showForm ? 'bi-dash-lg' : 'bi-person-plus'"></i>
+          {{ showForm ? ' Fermer' : ' Inscrire une pharmacie' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="luxury-card mb-5" *ngIf="showForm">
+      <div class="p-4 border-bottom bg-light">
+        <h5 class="m-0 fw-bold">{{ modeEdition ? 'Modifier le profil' : 'Nouveau Partenaire' }}</h5>
+      </div>
+      <div class="p-4">
+        <form [formGroup]="clientForm" (ngSubmit)="onSubmit()">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <label for="nom_pharmacie" class="small fw-bold mb-2">Nom de la Pharmacie</label>
+              <input id="nom_pharmacie" type="text"
+                     class="premium-input w-100" formControlName="nom_pharmacie"
+                     autocomplete="organization"
+                     [class.is-invalid]="clientForm.get('nom_pharmacie')?.invalid && clientForm.get('nom_pharmacie')?.touched">
+              <div class="invalid-feedback">Nom requis (min. 3 caractères).</div>
+            </div>
+
+            <div class="col-md-6">
+              <label for="nom_responsable" class="small fw-bold mb-2">Nom du Responsable</label>
+              <input id="nom_responsable" type="text"
+                     class="premium-input w-100" formControlName="nom_responsable"
+                     autocomplete="name"
+                     [class.is-invalid]="clientForm.get('nom_responsable')?.invalid && clientForm.get('nom_responsable')?.touched">
+              <div class="invalid-feedback">Nom du responsable requis.</div>
+            </div>
+
+            <div class="col-md-4">
+              <label for="telephone" class="small fw-bold mb-2">Téléphone</label>
+              <input id="telephone" type="tel"
+                     class="premium-input w-100" formControlName="telephone"
+                     autocomplete="tel"
+                     [class.is-invalid]="clientForm.get('telephone')?.invalid && clientForm.get('telephone')?.touched">
+              <div class="invalid-feedback">Numéro invalide.</div>
+            </div>
+
+            <div class="col-md-4">
+              <label for="email" class="small fw-bold mb-2">Email</label>
+              <input id="email" type="email"
+                     class="premium-input w-100" formControlName="email"
+                     autocomplete="email"
+                     [class.is-invalid]="clientForm.get('email')?.invalid && clientForm.get('email')?.touched">
+              <div class="invalid-feedback">Email invalide.</div>
+            </div>
+
+            <div class="col-md-4">
+              <label for="ville" class="small fw-bold mb-2">Ville</label>
+              <input id="ville" type="text"
+                     class="premium-input w-100" formControlName="ville"
+                     autocomplete="address-level2"
+                     [class.is-invalid]="clientForm.get('ville')?.invalid && clientForm.get('ville')?.touched">
+              <div class="invalid-feedback">Ville requise.</div>
+            </div>
+
+            <div class="col-md-12">
+              <label for="adress" class="small fw-bold mb-2">Adresse postale</label>
+              <textarea id="adress" class="premium-input w-100"
+                        formControlName="adress" rows="2"
+                        autocomplete="street-address"
+                        [class.is-invalid]="clientForm.get('adress')?.invalid && clientForm.get('adress')?.touched"></textarea>
+              <div class="invalid-feedback">Adresse requise.</div>
+            </div>
+          </div>
+
+          <div class="text-end mt-4">
+            <button type="button" class="btn btn-outline-secondary me-2 rounded-pill"
+                    *ngIf="modeEdition" (click)="resetForm()">
+              Annuler
+            </button>
+            <button type="submit" class="btn btn-brown px-5" [disabled]="clientForm.invalid">
+              {{ modeEdition ? 'Mettre à jour' : 'Enregistrer' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="luxury-card">
+      <div class="table-responsive">
+        <table class="table-luxe w-100">
+          <thead>
+            <tr>
+              <th>Pharmacie</th>
+              <th>Contact</th>
+              <th>Localisation</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="filteredClients.length === 0">
+              <td colspan="4" class="text-center text-muted py-4">Aucune pharmacie trouvée.</td>
+            </tr>
+            <tr *ngFor="let c of filteredClients">
+              <td>
+                <div class="fw-bold">{{ c.nom_pharmacie }}</div>
+                <div class="small text-muted">{{ c.nom_responsable }}</div>
+              </td>
+              <td>{{ c.telephone }}</td>
+              <td>{{ c.ville }}</td>
+              <td class="text-end">
+                <button class="btn btn-sm btn-outline-secondary rounded-circle me-2"
+                        (click)="modifierClient(c)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger rounded-circle"
+                        (click)="supprimerClient(c.id_pharm_client)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer class="app-footer text-center mt-5">
+  <div class="container">
+    <div class="brand d-flex justify-content-center align-items-center gap-2 mb-3">
+      <span class="fs-4">💊</span>
+      <h4 class="brand-name m-0 text-uppercase">GROSTOCK</h4>
+    </div>
+    <p class="text-muted small mb-4">Système de gestion pour les grossistes des pharmacies.</p>
+    <div class="d-flex justify-content-center gap-4 small fw-bold text-uppercase">
+      <span class="text-muted">© 2026</span>
+    </div>
+  </div>
+</footer>
