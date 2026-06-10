@@ -1,73 +1,110 @@
-# Approvisionnement Pharmaceutique — Spring Boot + Angular
+# 🏥 Projet Stage — Système d'approvisionnement Pharmaceutique
 
-Plateforme de gestion du stock et des commandes pour pharmacies et distributeurs (grossistes).
+Application web multi-modules dédiée à la gestion des stocks, commandes et approvisionnement dans le secteur pharmaceutique. Elle repose sur un backend Spring Boot et plusieurs frontends Angular indépendants.
 
-## 🏗️ Architecture
+---
 
-- **Frontends** : 4 applications Angular (Pharmacie, Grossiste 1/2/3)
-- **Backend** : Spring Boot 3.2 (API REST JWT-sécurisée)
-- **BD** : MySQL 8.0+
+## 🗂️ Structure du projet
 
-## 🚀 Lancement rapide
-
-### Prérequis
-- Java 17+, Node.js 18+, Maven 3.6+, MySQL 8.0+
-
-### 1. MySQL
-
-```bash
-mysql -u root
-CREATE USER IF NOT EXISTS 'dsi23admin'@'localhost' IDENTIFIED BY 'dsi23admin';
-GRANT ALL PRIVILEGES ON *.* TO 'dsi23admin'@'localhost';
-EXIT;
+```
+projet_stage/
+├── backend-spring/          # API REST — Spring Boot (Java 17)
+├── grossiste/               # Frontend Angular — Interface grossiste
+├── grossiste 2/             # Variante frontend grossiste
+├── grossiste 3/             # Variante frontend grossiste
+└── pharmacie/               # Frontend Angular — Interface pharmacie
 ```
 
-### 2. Frontends (4 terminaux)
+### Modules Angular (dans `pharmacie/src/app/`)
 
-```bash
-cd grossiste && npm install && npx ng serve --port 4300 --host 0.0.0.0
-cd 'grossiste 2' && npm install && npx ng serve --port 4301 --host 0.0.0.0
-cd 'grossiste 3' && npm install && npx ng serve --port 4302 --host 0.0.0.0
-cd pharmacie && npm install && npx ng serve --port 4303 --host 0.0.0.0
-```
+| Module | Description |
+|---|---|
+| `chatbot` | Assistant conversationnel intégré |
+| `commande` | Gestion des commandes |
+| `dashboard` | Tableau de bord analytique |
+| `footer` / `navbar` | Composants de navigation |
+| `grossistes` | Gestion des grossistes |
+| `interceptors` | Intercepteurs HTTP (auth, erreurs) |
+| `login-pharmacie` | Authentification pharmacie |
+| `notifications` | Système de notifications |
+| `services` | Services partagés Angular |
+| `stock` | Suivi des stocks |
 
-### 3. Backend
+---
+
+## 🛠️ Stack technique
+
+| Couche | Technologie |
+|---|---|
+| Backend | Spring Boot 3.x · Java 17 · Maven |
+| Frontend | Angular 17 · TypeScript |
+| Base de données | MySQL |
+| Sécurité | JWT (JSON Web Tokens) |
+
+---
+
+## 🚀 Lancement en local
+
+### Backend
 
 ```bash
 cd backend-spring
-mvn -DskipTests -Dmaven.test.skip=true spring-boot:run
+mvn -f pom.xml clean package
+mvn -f backend-spring spring-boot:run
 ```
 
-## 📍 URLs
+L'API sera disponible sur `http://localhost:8080`.
 
-| App | URL |
-|---|---|
-| **Grossiste 1** | http://localhost:4300 |
-| **Grossiste 2** | http://localhost:4301 |
-| **Grossiste 3** | http://localhost:4302 |
-| **Pharmacie** | http://localhost:4303 |
-| **Backend** | http://localhost:8080 |
-| **Swagger** | http://localhost:8080/swagger-ui.html |
+### Frontend (exemple avec `grossiste`)
 
-## 🔐 Credentials
+```bash
+cd grossiste
+npm ci
+npx ng serve --port 4300 --host 0.0.0.0
+```
 
-**MySQL:** `dsi23admin` / `dsi23admin`
+Accès via `http://localhost:4300`.
 
-**Test Pharmacie:** `dev_test@local` / `Test1234`
+> Pour `pharmacie`, `grossiste 2`, `grossiste 3` ou `lotfi`, répliquer les mêmes commandes depuis leur répertoire respectif en adaptant le port.
 
-## 📊 Endpoints Clés
+---
 
-| Endpoint | Méthode | Auth |
-|---|---|---|
-| `/api/medicaments` | GET | ✅ JWT |
-| `/api/commandes` | GET | ✅ JWT |
-| `/api/grossiste/produits` | GET | ❌ Public |
-| `/api/auth/login` | POST | ❌ Public |
-| `/api/auth/login-grossiste` | POST | ❌ Public |
+## ⚙️ Prérequis
 
-## 📝 DB
+- Java 17+
+- Maven 3.6+
+- Node.js 18+ et npm
+- Angular CLI : `npm install -g @angular/cli`
+- MySQL (instance locale ou distante)
 
-- `pharmacie_db` — Pharmacie (tables : medicaments, commandes, users)
-- `grossiste_db*` — Distributeurs (3 bases)
+---
 
-Données d'exemple pré-insérées.
+## 🔧 Configuration
+
+Avant de lancer le backend, configurer les paramètres de connexion à la base de données dans :
+
+```
+backend-spring/src/main/resources/application.properties
+```
+
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/nom_de_la_base
+spring.datasource.username=votre_utilisateur
+spring.datasource.password=votre_mot_de_passe
+```
+
+> ⚠️ Ne jamais committer ce fichier avec des identifiants réels. Utiliser des variables d'environnement ou un fichier `.env` ignoré par Git.
+
+---
+
+## 📌 Notes
+
+- Les dossiers `target/` et `node_modules/` ne doivent pas être versionnés (ajouter au `.gitignore`).
+- Les trois variantes de frontend (`grossiste`, `grossiste 2`, `grossiste 3`) sont à consolider ou documenter selon leur rôle distinct.
+- Aucun pipeline CI/CD n'est encore configuré.
+
+---
+
+## 👤 Auteur
+
+Projet réalisé dans le cadre d'un stage en développement web full-stack.
