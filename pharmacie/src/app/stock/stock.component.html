@@ -1,0 +1,165 @@
+<app-navbar></app-navbar>
+
+<header>
+  <div class="container">
+    <h1 class="display-4 fw-bold">Gestion d'Inventaire</h1>
+    <p class="lead text-muted">Suivez, modifiez et approvisionnez vos produits pharmaceutiques.</p>
+    <button class="btn btn-success shadow mt-4" (click)="toggleForm()">
+      {{ showForm ? '❌ Annuler' : '➕ Ajouter un médicament' }}
+    </button>
+  </div>
+</header>
+
+<div class="container py-5">
+  <div class="card border-0 shadow mb-5" *ngIf="showForm">
+    <div class="card-header bg-white border-0 pt-4 pb-0 px-4">
+      <h5 class="mb-0 fw-bold text-success">{{ medicamentId ? '✏️ Modifier' : '✨ Nouveau' }} produit</h5>
+    </div>
+    <div class="card-body p-4">
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label small fw-bold">Désignation</label>
+            <input type="text" class="form-control" formControlName="nom" placeholder="Ex: Paracétamol">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-bold">Stock</label>
+            <input type="number" class="form-control" formControlName="quantite">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-bold">Seuil Alerte</label>
+            <input type="number" class="form-control" formControlName="seuil_alerte">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-bold">Péremption</label>
+            <input type="date" class="form-control" formControlName="date_peremption">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-bold">Prix (DT)</label>
+            <input type="number" class="form-control" formControlName="prix">
+          </div>
+        </div>
+        <div class="mt-4 text-end">
+          <button type="submit" class="btn btn-success px-5" [disabled]="form.invalid">
+            {{ medicamentId ? 'Enregistrer les modifications' : 'Ajouter au stock' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <div class="row align-items-center mb-4">
+      <div class="col-md-6">
+        <h3 class="fw-bold text-dark mb-0">Liste Médicaments</h3>
+      </div>
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text bg-light border-0">🔍</span>
+          <input type="text" class="form-control border-0 bg-light" placeholder="Rechercher un médicament..." [(ngModel)]="searchTerm" (input)="filterMedicaments()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Message d'erreur utilisateur -->
+    <div class="alert alert-danger border-0 shadow-sm mb-4 fade-in" *ngIf="errorMessage">
+      ⚠️ {{ errorMessage }}
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="bg-light">
+          <tr>
+            <th>Produit</th>
+            <th>Stock actuel</th>
+            <th>Seuil</th>
+            <th>Date limite</th>
+            <th>Prix U.</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let med of paginatedMedicaments">
+            <td class="fw-bold text-dark">{{ med.nom }}</td>
+            <td>
+              <span class="badge rounded-pill" [ngClass]="med.quantite <= med.seuil_alerte ? 'bg-danger-light' : 'bg-success-light'">
+                {{ med.quantite }} unités
+              </span>
+            </td>
+            <td>{{ med.seuil_alerte }}</td>
+            <td>{{ med.date_peremption | date:'dd MMM yyyy' }}</td>
+            <td>{{ med.prix | number:'1.2-2' }} DT</td>
+            <td class="text-end">
+              <button class="btn btn-icon me-2" (click)="remplirForm(med)" title="Modifier">✏️</button>
+              <button class="btn btn-icon btn-light-danger me-2" (click)="delete(med.id)" title="Supprimer">🗑️</button>
+              <button 
+                class="btn btn-sm px-3" 
+                [ngClass]="med.quantite < med.seuil_alerte ? 'btn-danger' : 'btn-success'"
+                (click)="ouvrirSourcing(med)">
+                SOS
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="!loading && paginatedMedicaments.length === 0">
+            <td colspan="6" class="text-center py-4 text-muted">Aucun médicament trouvé.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center mt-4 px-3" *ngIf="totalPages > 1">
+      <span class="small text-muted fw-bold">Page {{ currentPage }} sur {{ totalPages }}</span>
+      <nav>
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <button class="page-link shadow-none border-0 bg-light text-dark rounded me-1" (click)="goToPage(currentPage - 1)">Précédent</button>
+          </li>
+          <li class="page-item" *ngFor="let p of getPagesArray()" [class.active]="currentPage === p">
+            <button class="page-link shadow-none border-0 rounded me-1" 
+                    [ngClass]="currentPage === p ? 'bg-success text-white' : 'bg-light text-dark'"
+                    (click)="goToPage(p)">{{ p }}</button>
+          </li>
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <button class="page-link shadow-none border-0 bg-light text-dark rounded" (click)="goToPage(currentPage + 1)">Suivant</button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="isModalOpen">
+  <div class="modal-card border-0">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h5 class="mb-0 fw-bold text-success">📦 : {{ selectedMedNom }}</h5>
+      <button class="btn-close" (click)="isModalOpen = false"></button>
+    </div>
+
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="spinner-border text-success" role="status"></div>
+      <p class="mt-3 text-muted">Recherche des meilleures offres grossistes...</p>
+    </div>
+
+    <div *ngIf="!loading">
+      <div class="list-group list-group-flush">
+        <div class="list-group-item py-3 px-3 border-bottom" *ngFor="let g of grossistes">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="mb-1 fw-bold text-dark">{{ g.nom_grossiste }}</h6>
+              <p class="small text-muted mb-0">{{ g.prix | number:'1.2-2' }} DT | Stock: {{ g.stock }}</p>
+            </div>
+            <div class="d-flex align-items-center" style="max-width: 160px;">
+              <input type="number" class="form-control form-control-sm me-2" [(ngModel)]="g.quantiteSouhaitee">
+            <button class="btn btn-cart-emoji" (click)="commander(g)">🛒</button></div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="grossistes.length === 0" class="text-center py-4">
+        <p class="text-muted">Aucun grossiste ne propose ce produit actuellement.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

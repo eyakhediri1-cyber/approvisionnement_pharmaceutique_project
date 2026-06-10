@@ -1,0 +1,8 @@
+{
+  "routes": [
+    "/commande",
+    "/dashboard",
+    "/login",
+    "/stock"
+  ]
+}

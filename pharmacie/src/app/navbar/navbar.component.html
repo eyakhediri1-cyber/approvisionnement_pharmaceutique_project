@@ -1,0 +1,165 @@
+<nav class="navbar navbar-expand-lg fixed-top pharma-navbar">
+  <div class="container">
+
+    <!-- Brand -->
+    <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/dashboard">
+      <div class="logo-pill">💊</div>
+      <div class="brand-block">
+        <span class="brand-text">PharmaStock</span>
+        <span class="brand-sub">Gestion intelligente</span>
+      </div>
+    </a>
+
+    <!-- Toggler mobile -->
+    <button class="navbar-toggler custom-toggler border-0 ms-auto" type="button"
+      data-bs-toggle="collapse" data-bs-target="#navMenu"
+      aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="toggler-bar"></span>
+      <span class="toggler-bar"></span>
+      <span class="toggler-bar"></span>
+    </button>
+
+    <!-- Menu -->
+    <div class="collapse navbar-collapse" id="navMenu">
+
+      <!-- Nav links (centré) -->
+      <ul class="navbar-nav mx-auto align-items-center gap-1">
+
+        <li class="nav-item">
+          <a class="nav-link nav-pill" routerLink="/dashboard" routerLinkActive="active">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" rx="1"/>
+              <rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/>
+              <rect x="14" y="14" width="7" height="7" rx="1"/>
+            </svg>
+            Dashboard
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link nav-pill" routerLink="/stock" routerLinkActive="active">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/>
+            </svg>
+            Stock
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link nav-pill" routerLink="/commande" routerLinkActive="active">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="21" r="1"/>
+              <circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            Commandes
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link nav-pill" routerLink="/grossistes" routerLinkActive="active">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            Grossistes
+          </a>
+        </li>
+
+      </ul>
+
+      <!-- Right side -->
+      <ul class="navbar-nav align-items-center gap-2">
+
+        <!-- Notifications -->
+        <li class="nav-item">
+          <a class="nav-icon-btn position-relative" routerLink="/notifications" title="Notifications">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <span class="notif-dot"></span>
+          </a>
+        </li>
+
+        <!-- Divider -->
+        <li class="nav-item">
+          <div class="nav-divider"></div>
+        </li>
+
+        <!-- User dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link p-0 d-flex align-items-center gap-2 user-trigger"
+            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <div class="user-avatar">
+              {{ userName.charAt(0).toUpperCase() }}
+            </div>
+            <div class="user-info d-none d-xl-flex flex-column">
+              <span class="user-name">{{ userName }}</span>
+              <span class="user-role">Pharmacien</span>
+            </div>
+            <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </a>
+
+          <ul class="dropdown-menu dropdown-menu-end pharma-dropdown shadow-lg">
+
+            <!-- Header utilisateur -->
+            <li class="dropdown-header-item px-3 py-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="user-avatar user-avatar-sm">{{ userName.charAt(0).toUpperCase() }}</div>
+                <div>
+                  <p class="mb-0 fw-semibold small">{{ userName }}</p>
+                  <p class="mb-0 text-muted" style="font-size:11px">Pharmacien principal</p>
+                </div>
+              </div>
+            </li>
+            <li><hr class="dropdown-divider my-1"></li>
+
+            <!-- Assistant IA -->
+            <li>
+              <a class="dropdown-item d-flex align-items-center gap-2" routerLink="/chatbot">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  <circle cx="12" cy="16" r="1" fill="currentColor"/>
+                </svg>
+                Assistant IA
+              </a>
+            </li>
+
+            <!-- Notifications -->
+            <li>
+              <a class="dropdown-item d-flex align-items-center gap-2" routerLink="/notifications">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                Notifications
+              </a>
+            </li>
+
+            <li><hr class="dropdown-divider my-1"></li>
+
+            <!-- Déconnexion -->
+            <li>
+              <a class="dropdown-item d-flex align-items-center gap-2 text-danger"
+                 style="cursor:pointer" (click)="logout()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Déconnexion
+              </a>
+            </li>
+
+          </ul>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>

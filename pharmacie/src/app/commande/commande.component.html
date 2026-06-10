@@ -1,0 +1,220 @@
+<app-navbar></app-navbar>
+<header class="hero-section">
+  <div class="container py-5">
+    <div class="row align-items-center">
+      <div class="col-md-7 hero-content">
+        <h1 class="display-4 fw-bold mt-2">Suivi des commandes</h1>
+        <p class="text-secondary lead">Visualisation en temps réel de vos approvisionnements.</p>
+        <button class="btn btn-success shadow-lg mt-3 px-4 py-2 rounded-3" (click)="ouvrirNouvelleCommande()">
+          ➕ Passer une commande
+        </button>
+      </div>
+
+      <div class="col-md-5 text-center d-none d-md-block float-animation">
+        <img src="https://i.pinimg.com/1200x/db/78/ed/db78ed8134acd64e11a8c0289e89e025.jpg"
+          class="img-fluid rounded-5 shadow-lg aesthetic-img" alt="Pharmacie Flux">
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="container mb-5">
+  <div class="glass-card shadow-lg border-0 main-container">
+    <div class="p-4 d-flex justify-content-between align-items-center border-bottom flex-wrap gap-3">
+      <h5 class="mb-0 fw-bold">Transactions Récentes</h5>
+      <button class="btn-refresh" (click)="chargerHistorique()" [class.spinning]="loading">
+        🔄
+      </button>
+    </div>
+
+    <!-- Barre de filtres interactive -->
+    <div class="p-3 bg-light border-bottom d-flex flex-wrap gap-2 align-items-center">
+      <div class="position-relative flex-grow-1" style="min-width: 240px;">
+        <input type="text" class="form-control form-control-sm border-1 bg-white shadow-none ps-4" 
+               placeholder="Rechercher par médicament ou grossiste..." 
+               [(ngModel)]="searchTerm" (input)="appliquerFiltres()">
+      </div>
+      
+      <div style="min-width: 160px;">
+        <select class="form-select form-select-sm border-1 bg-white shadow-none" 
+                [(ngModel)]="statusFilter" (change)="appliquerFiltres()">
+          <option value="">Tous les statuts</option>
+          <option value="En attente">En attente</option>
+          <option value="Confirmée">Confirmée</option>
+          <option value="En préparation">En préparation</option>
+          <option value="Expédiée">Expédiée</option>
+          <option value="Livrée">Livrée</option>
+          <option value="Annulée">Annulée</option>
+        </select>
+      </div>
+
+      <div style="min-width: 160px;">
+        <input type="date" class="form-control form-control-sm border-1 bg-white shadow-none" 
+               [(ngModel)]="dateFilter" (change)="appliquerFiltres()">
+      </div>
+
+      <button class="btn btn-sm btn-outline-secondary" (click)="reinitialiserFiltres()">
+        Réinitialiser
+      </button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-borderless align-middle mb-0">
+        <thead>
+          <tr class="fade-in">
+            <th class="text-muted small text-uppercase ps-4">Date & Heure</th>
+            <th class="text-muted small text-uppercase">Médicament</th>
+            <th class="text-muted small text-uppercase">Grossiste</th>
+            <th class="text-muted small text-uppercase text-center">Quantité</th>
+            <th class="text-muted small text-uppercase text-end pe-4">État & Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngIf="loading">
+            <tr class="skeleton-row" *ngFor="let item of [1,2,3,4]">
+              <td colspan="5">
+                <div class="skeleton-line"></div>
+              </td>
+            </tr>
+          </ng-container>
+
+          <ng-container *ngIf="!loading">
+            <tr *ngFor="let cmd of filteredCommandes; let i = index" class="order-row stagger-item"
+              [style.animation-delay]="(i * 0.1) + 's'" (click)="voirDetail(cmd)" style="cursor: pointer;">
+              <td class="ps-4">
+                <div class="d-flex flex-column">
+                  <span class="fw-bold">{{ cmd.date_cmd | date:'dd MMM yyyy' }}</span>
+                  <span class="small text-muted opacity-75">{{ cmd.date_cmd | date:'HH:mm' }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="product-info">
+                  <span class="fw-bold text-dark">{{ cmd.nom_med }}</span>
+                </div>
+              </td>
+              <td><span class="grossiste-label">{{ cmd.grossiste }}</span></td>
+              <td class="text-center"><span class="quantity-pill fw-bold">{{ cmd.quantite }}</span></td>
+              <td class="text-end pe-4">
+                <div class="d-flex align-items-center justify-content-end gap-3">
+                  <span class="status-badge" [ngClass]="getStatutClass(cmd.statut)">
+                    {{ cmd.statut || 'Livré' }}
+                  </span>
+                  <button *ngIf="peutReceptionner(cmd.statut)" class="btn-confirm"
+                    (click)="validerReception(cmd); $event.stopPropagation()" title="Confirmer la réception de la livraison">
+                    ✔️
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+
+          <tr *ngIf="!loading && filteredCommandes.length === 0">
+            <td colspan="5" class="text-center py-5 text-muted">Aucune commande disponible.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<!-- Modal Détail d'une Commande -->
+<div class="modal-overlay" *ngIf="showDetailModal" style="position: fixed; inset: 0; background: rgba(10, 26, 21, 0.45); backdrop-filter: blur(10px); z-index: 1050; display: flex; align-items: center; justify-content: center;">
+  <div style="background: white; border-radius: 20px; width: 90%; max-width: 500px; padding: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); border: 1px solid rgba(16, 185, 129, 0.15); position: relative;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h5 class="mb-0 fw-bold text-success" style="font-family: 'Syne', sans-serif;">📋 Détails de la commande</h5>
+      <button type="button" class="btn-close" (click)="fermerDetail()" style="border: none; background: transparent; font-size: 20px; cursor: pointer; color: #7aab96;">✕</button>
+    </div>
+
+    <div class="detail-body" style="font-family: 'DM Sans', sans-serif;" *ngIf="selectedCommande">
+      <div class="d-flex justify-content-between py-2 border-bottom">
+        <span class="text-muted">Référence de commande :</span>
+        <span class="fw-bold text-dark">#{{ selectedCommande.id }}</span>
+      </div>
+      <div class="d-flex justify-content-between py-2 border-bottom">
+        <span class="text-muted">Médicament :</span>
+        <span class="fw-bold text-success">{{ selectedCommande.nom_med }}</span>
+      </div>
+      <div class="d-flex justify-content-between py-2 border-bottom">
+        <span class="text-muted">Grossiste / Fournisseur :</span>
+        <span class="fw-bold text-dark">{{ selectedCommande.grossiste }}</span>
+      </div>
+      <div class="d-flex justify-content-between py-2 border-bottom">
+        <span class="text-muted">Quantité commandée :</span>
+        <span class="fw-bold text-dark">{{ selectedCommande.quantite }} unités</span>
+      </div>
+      <div class="d-flex justify-content-between py-2 border-bottom" *ngIf="selectedCommande.prix_total">
+        <span class="text-muted">Prix de revient :</span>
+        <span class="fw-bold text-success">{{ selectedCommande.prix_total | number:'1.2-2' }} DT</span>
+      </div>
+      <div class="d-flex justify-content-between py-2 border-bottom">
+        <span class="text-muted">Date de commande :</span>
+        <span class="fw-bold text-dark">{{ selectedCommande.date_cmd | date:'dd MMM yyyy à HH:mm' }}</span>
+      </div>
+      <div class="d-flex justify-content-between py-2 align-items-center">
+        <span class="text-muted">Statut actuel :</span>
+        <span class="status-badge" [ngClass]="getStatutClass(selectedCommande.statut)">
+          {{ selectedCommande.statut }}
+        </span>
+      </div>
+    </div>
+
+    <div class="text-end mt-4">
+      <button class="btn btn-secondary px-4 py-2 rounded-3 border-0 bg-light text-dark" (click)="fermerDetail()">
+        Fermer
+      </button>
+      <button *ngIf="peutReceptionner(selectedCommande?.statut)" class="btn btn-success px-4 py-2 rounded-3 border-0 bg-success text-white ms-2" (click)="validerReception(selectedCommande); fermerDetail()">
+        Valider la réception
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Nouvelle Commande -->
+<div class="modal-overlay" *ngIf="showCreateModal" style="position: fixed; inset: 0; background: rgba(10, 26, 21, 0.45); backdrop-filter: blur(10px); z-index: 1050; display: flex; align-items: center; justify-content: center;">
+  <div style="background: white; border-radius: 20px; width: 90%; max-width: 550px; padding: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); border: 1px solid rgba(16, 185, 129, 0.15); position: relative;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h5 class="mb-0 fw-bold text-success" style="font-family: 'Syne', sans-serif;">✨ Passer une commande</h5>
+      <button type="button" class="btn-close" (click)="showCreateModal = false" style="border: none; background: transparent; font-size: 20px; cursor: pointer; color: #7aab96;">✕</button>
+    </div>
+
+    <form [formGroup]="createForm" (ngSubmit)="soumettreCommande()">
+      <div class="mb-3">
+        <label class="form-label small fw-bold">Nom du médicament</label>
+        <input type="text" class="form-control" formControlName="nom" placeholder="Ex: Paracétamol (commencez à saisir...)">
+        <div *ngIf="searchingWholesalers" class="small text-muted mt-1">
+          🔍 Recherche des grossistes proposant ce produit...
+        </div>
+      </div>
+
+      <div class="mb-3" *ngIf="wholesalers.length > 0">
+        <label class="form-label small fw-bold">Sélectionner le fournisseur grossiste</label>
+        <select class="form-select shadow-none" formControlName="grossiste">
+          <option value="">-- Choisir un grossiste --</option>
+          <option *ngFor="let w of wholesalers" [value]="w.nom_grossiste">
+            {{ w.nom_grossiste }} — {{ w.prix | number:'1.2-2' }} DT (Dispo: {{ w.stock }} unités)
+          </option>
+        </select>
+      </div>
+
+      <div class="mb-3" *ngIf="createForm.get('nom')?.value && wholesalers.length === 0 && !searchingWholesalers">
+        <p class="small text-danger">⚠️ Aucun grossiste ne propose ce produit en stock actuellement.</p>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label small fw-bold">Quantité à commander</label>
+        <input type="number" class="form-control shadow-none" formControlName="qte">
+      </div>
+
+      <div class="text-end mt-4">
+        <button type="button" class="btn btn-secondary px-4 py-2 rounded-3 border-0 bg-light text-dark me-2" (click)="showCreateModal = false">
+          Annuler
+        </button>
+        <button type="submit" class="btn btn-success px-4 py-2 rounded-3 border-0 bg-success text-white" [disabled]="createForm.invalid || wholesalers.length === 0">
+          Confirmer la commande
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<app-footer></app-footer>

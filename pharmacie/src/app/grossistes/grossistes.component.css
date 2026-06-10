@@ -1,0 +1,37 @@
+header {
+    background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
+    border-bottom-left-radius: 50px;
+    border-bottom-right-radius: 50px;
+}
+
+.product-card {
+    transition: all 0.3s ease;
+    border-radius: 20px;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+}
+
+.bg-soft-success {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.order-zone {
+    border: 1px dashed #cbd5e1;
+}
+
+.input-group-text {
+    border-radius: 12px 0 0 12px;
+}
+
+.form-control {
+    border-radius: 12px;
+}
+
+footer {
+    background: #1e293b;
+    color: white;
+}

@@ -1,0 +1,30 @@
+
+> pharmacie@0.0.0 start
+> ng serve --port 4200
+
+- Building...
+
+Browser bundles        
+Initial chunk files     | Names               |  Raw size
+styles.css              | styles              | 270.45 kB | 
+main.js                 | main                | 209.81 kB | 
+polyfills.js            | polyfills           |  88.09 kB | 
+
+                        | Initial total       | 568.35 kB
+
+
+Server bundles         
+Initial chunk files     | Names               |  Raw size
+chunk-INWPLOVN.mjs      | -                   |   1.71 MB | 
+main.server.mjs         | main.server         | 595.78 kB | 
+polyfills.server.mjs    | polyfills.server    | 559.49 kB | 
+chunk-VPSODEBW.mjs      | -                   |   2.51 kB | 
+render-utils.server.mjs | render-utils.server | 423 bytes | 
+
+Lazy chunk files        | Names               |  Raw size
+chunk-P3UOPGAK.mjs      | xhr2                |  39.09 kB | 
+
+Application bundle generation complete. [4.695 seconds]
+
+Watch mode enabled. Watching for file changes...
+  ➜  Local:   http://localhost:4200/

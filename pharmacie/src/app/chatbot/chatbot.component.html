@@ -1,0 +1,95 @@
+<!-- ============================================================
+     chatbot.component.html
+     Interface chat flottante — bullons ouvrir/fermer + messages
+     CORRECTION : template était vide (<p>chatbot works!</p>)
+     ============================================================ -->
+
+<!-- ── Bouton flottant d'ouverture ──────────────────────────── -->
+<div class="chatbot-fab" (click)="toggleChat()" [class.active]="isOpen"
+     title="Ouvrir l'assistant PharmaBot">
+  <span class="fab-icon">{{ isOpen ? '✕' : '💬' }}</span>
+  <span class="notification-badge" *ngIf="hasNewMessage && !isOpen">●</span>
+</div>
+
+<!-- ── Fenêtre de chat ──────────────────────────────────────── -->
+<div class="chatbot-window" [class.open]="isOpen">
+
+  <!-- En-tête -->
+  <div class="chatbot-header">
+    <div class="chatbot-header-info">
+      <div class="bot-avatar">🤖</div>
+      <div>
+        <div class="bot-name">PharmaBot</div>
+        <div class="bot-status">
+          <span class="status-dot"></span>
+          {{ isLoading ? 'En train de répondre...' : 'En ligne' }}
+        </div>
+      </div>
+    </div>
+    <button class="close-btn" (click)="toggleChat()">✕</button>
+  </div>
+
+  <!-- Zone de messages -->
+  <div class="chatbot-messages" #messagesContainer>
+    <div *ngFor="let msg of messages"
+         class="message-wrapper"
+         [class.user-wrapper]="msg.role === 'user'"
+         [class.bot-wrapper]="msg.role === 'assistant'">
+
+      <!-- Avatar bot -->
+      <div class="message-avatar" *ngIf="msg.role === 'assistant'">🤖</div>
+
+      <!-- Bulle de message -->
+      <div class="message-bubble" [class.user-bubble]="msg.role === 'user'"
+                                  [class.bot-bubble]="msg.role === 'assistant'">
+        <div class="message-content" [innerHTML]="formatMessage(msg.content)"></div>
+        <div class="message-time">{{ formatTime(msg.timestamp) }}</div>
+      </div>
+
+      <!-- Avatar utilisateur -->
+      <div class="message-avatar user-icon" *ngIf="msg.role === 'user'">👤</div>
+    </div>
+
+    <!-- Indicateur de frappe "..." -->
+    <div class="message-wrapper bot-wrapper" *ngIf="isLoading">
+      <div class="message-avatar">🤖</div>
+      <div class="message-bubble bot-bubble typing-indicator">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Zone de saisie -->
+  <div class="chatbot-input-area">
+    <textarea
+      class="chatbot-input"
+      [(ngModel)]="userInput"
+      (keydown)="onKeyDown($event)"
+      placeholder="Posez votre question... (Ex: alertes stock)"
+      rows="1"
+      [disabled]="isLoading"
+    ></textarea>
+    <button class="send-btn"
+            (click)="sendMessage()"
+            [disabled]="isLoading || !userInput.trim()"
+            title="Envoyer (Entrée)">
+      <span>{{ isLoading ? '⏳' : '➤' }}</span>
+    </button>
+  </div>
+
+  <!-- Suggestions rapides -->
+  <div class="quick-suggestions">
+    <button class="suggestion-chip" (click)="userInput='commandes en attente'; sendMessage()">
+      📋 Commandes en attente
+    </button>
+    <button class="suggestion-chip" (click)="userInput='alertes stock'; sendMessage()">
+      ⚠️ Alertes stock
+    </button>
+    <button class="suggestion-chip" (click)="userInput='inventaire'; sendMessage()">
+      🏥 Inventaire
+    </button>
+    <button class="suggestion-chip" (click)="userInput='liste des fournisseurs'; sendMessage()">
+      🏭 Fournisseurs
+    </button>
+  </div>
+</div>

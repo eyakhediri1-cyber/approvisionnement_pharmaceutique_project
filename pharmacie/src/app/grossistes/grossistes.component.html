@@ -1,0 +1,77 @@
+<nav class="navbar navbar-expand-lg fixed-top shadow">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="#">💊 PharmaStock | Espace Achat</a>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="/stock-pharmacie">Mon Stock</a></li>
+        <li class="nav-item"><a class="nav-link active" href="#">Catalogue Grossiste</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<header class="pt-5 mt-5">
+  <div class="container py-5">
+    <div class="row align-items-center">
+      <div class="col-md-7">
+        <h1 class="display-4 fw-bold">Commander chez le Grossiste</h1>
+        <p class="lead">Accédez au catalogue en temps réel et réapprovisionnez votre officine instantanément.</p>
+      </div>
+      <div class="col-md-5 text-center">
+        <img src="https://images.unsplash.com/photo-1576086213369-97a306d36557?auto=format&fit=crop&q=80&w=1000" 
+             class="img-fluid rounded-circle shadow-lg" alt="Logistique">
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="container my-5">
+  <div class="card shadow-sm mb-5 border-0 bg-light">
+    <div class="card-body p-4">
+      <div class="input-group">
+        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+        <input type="text" class="form-control form-control-lg border-start-0" 
+               placeholder="Rechercher un médicament dans le catalogue grossiste..."
+               [(ngModel)]="searchTerm" (input)="filterProduits()">
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-4" *ngFor="let p of filteredProduits">
+      <div class="card h-100 shadow-sm border-0 product-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <h5 class="fw-bold text-primary mb-0">{{ p.nom_med }}</h5>
+            <span class="badge bg-soft-success text-success">{{ p.prix_unitaire }} DT</span>
+          </div>
+          
+          <div class="mb-3">
+            <small class="text-muted d-block">Disponibilité chez grossiste :</small>
+            <div class="progress mt-1" style="height: 8px;">
+              <div class="progress-bar bg-success" 
+                   [style.width.%]="(p.stock_dispo / 500) * 100"></div>
+            </div>
+            <small class="fw-bold">{{ p.stock_dispo }} unités en stock</small>
+          </div>
+
+          <div class="order-zone bg-light p-3 rounded">
+            <label class="small fw-bold mb-2">Quantité à commander</label>
+            <div class="d-flex gap-2">
+              <input type="number" class="form-control" value="1" #qteInput>
+              <button class="btn btn-success" (click)="commander(p, qteInput.value)">
+                🛒
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="mt-5">
+  <div class="container py-4 text-center border-top">
+    <p class="fw-semibold mb-1 text-white">PharmaStock Grossiste Connect © 2026</p>
+  </div>
+</footer>
